@@ -6,13 +6,22 @@ import NavLink from "./NavLink";
 import { afterLoginNavData, beforeLoginNavData } from "@/data/navData";
 import useTheme from "@/hooks/useTheme";
 import { useState } from "react";
+import useAuth from "@/hooks/useAuth";
+import { toast } from "react-hot-toast";
 
 const Navbar = () => {
-    const {theme,toggleTheme} = useTheme();
-    const [navToggle,setNavToggle] = useState(false)
-    const user = null;
-    const navData = user? afterLoginNavData : beforeLoginNavData;
-    
+    const { user, logout } = useAuth();
+
+    const { uid, displayName, photoURL } = user || {};
+    const navData = uid ? afterLoginNavData : beforeLoginNavData;
+    const { theme, toggleTheme } = useTheme();
+    const [navToggle, setNavToggle] = useState(false)
+
+    const handleLogout = async () => {
+        await logout();
+        toast.success('Successfully logout')
+    }
+
     return (
         <nav className="navbar sticky top-0 z-10 bg-slate-200 shadow-lg dark:bg-slate-900 lg:pr-3">
             <div className="flex-1">
@@ -21,11 +30,11 @@ const Navbar = () => {
                 </Link>
             </div>
             <div
-                className={`absolute ${navToggle?'left-0':'left-[-120%]'} top-[4.5rem] flex w-full flex-col bg-slate-200 pb-3 pt-2 transition-all duration-300 dark:bg-slate-900 lg:static lg:w-[unset] lg:flex-row lg:bg-transparent lg:pb-0 lg:pt-0 dark:lg:bg-transparent`}
+                className={`absolute ${navToggle ? 'left-0' : 'left-[-120%]'} top-[4.5rem] flex w-full flex-col bg-slate-200 pb-3 pt-2 transition-all duration-300 dark:bg-slate-900 lg:static lg:w-[unset] lg:flex-row lg:bg-transparent lg:pb-0 lg:pt-0 dark:lg:bg-transparent`}
             >
                 <ul className="menu menu-horizontal flex-col px-1 lg:flex-row">
                     {navData.map(({ path, title }) => (
-                        <li onClick={()=>setNavToggle(false)} key={path} className="mx-auto">
+                        <li onClick={() => setNavToggle(false)} key={path} className="mx-auto">
                             <NavLink
                                 href={path}
                                 activeClassName="text-blue-500"
@@ -75,12 +84,13 @@ const Navbar = () => {
                         </div>
                     </div>
                 </div>
-                <div className="dropdown-end dropdown">
+                {uid && <div className="dropdown-end dropdown">
                     <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
                         <div className="w-10 rounded-full">
                             <Image
+                                title={displayName}
                                 alt="user-logo"
-                                src={"https://i.ibb.co/0QZCv5C/png-clipart-user-profile-computer-icons-login-user-avatars-monochrome-black.png"}
+                                src={photoURL || "https://i.ibb.co/0QZCv5C/png-clipart-user-profile-computer-icons-login-user-avatars-monochrome-black.png"}
                                 width={40}
                                 height={40}
                                 className="h-10 w-10 rounded-full"
@@ -92,7 +102,7 @@ const Navbar = () => {
                         className="menu-compact dropdown-content menu rounded-box mt-3 w-52 bg-base-100 p-2 shadow"
                     >
                         <li className="mb-2 mt-1 text-center font-semibold">
-                            displayName
+                            {displayName}
                         </li>
                         <div className="divider my-0"></div>
                         <li className="mb-2">
@@ -106,15 +116,16 @@ const Navbar = () => {
                         </li>
                         <li className="">
                             <button
+                                onClick={handleLogout}
                                 className="btn-warning btn content-center text-white"
                             >
                                 Logout
                             </button>
                         </li>
                     </ul>
-                </div>
+                </div>}
                 <label className="swap swap-rotate lg:ml-2">
-                    <input onChange={toggleTheme} type="checkbox" defaultChecked={theme==='dark'} />
+                    <input onChange={toggleTheme} type="checkbox" defaultChecked={theme === 'dark'} />
                     <svg
                         className="swap-on h-9 w-9 fill-current"
                         xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +143,7 @@ const Navbar = () => {
                 </label>
             </div>
             <label className="swap-rotate swap btn-ghost btn-circle btn ml-2 bg-white dark:bg-slate-800 lg:hidden">
-                <input onClick={()=>setNavToggle((pre)=>!pre)} defaultChecked={navToggle} type="checkbox" />
+                <input onClick={() => setNavToggle((pre) => !pre)} defaultChecked={navToggle} type="checkbox" />
                 <svg
                     className="swap-off fill-current"
                     xmlns="http://www.w3.org/2000/svg"
