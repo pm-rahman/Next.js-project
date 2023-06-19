@@ -1,22 +1,24 @@
 'use client'
 
+import useAuth from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "react-hot-toast";
 import { MdOutlineAddShoppingCart } from "react-icons/md";
 
 const AddToCartBtn = ({ id }) => {
-    const {cart,isLoading,mutate} = useCart()
+    const { user } = useAuth();
+    const { cart, isLoading, mutate } = useCart()
     const isAlready = cart.findIndex((pd) => pd._id === id);
-    const handleAddToCart = async () => { 
+    const handleAddToCart = async () => {
         try {
-            const res = await fetch(`/api/cart?id=${id}`,{
-                method:'POST',
+            const res = await fetch(`/api/cart?id=${id}`, {
+                method: 'POST',
             })
             const result = await res.json();
-            if(result.added){
+            if (result.added) {
                 toast.success(result.message)
                 mutate();
-            }else{
+            } else {
                 toast.error(result.message)
             }
         } catch (error) {
@@ -27,10 +29,10 @@ const AddToCartBtn = ({ id }) => {
         <button
             className="btn btn-primary mt-4"
             onClick={() => handleAddToCart(id)}
-            disabled={isAlready!==-1||isLoading}
+            disabled={!user && isAlready !== -1 || isLoading}
         >
             <MdOutlineAddShoppingCart />
-            {isAlready!==-1?'Already Added':'Add To Cart'}
+            {isAlready !== -1 ? 'Already Added' : 'Add To Cart'}
         </button>
     );
 };

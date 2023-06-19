@@ -1,5 +1,4 @@
-import React from 'react';
-import Checkout from './checkout';
+import Checkout from "./Checkout";
 
 export const metadata = {
     title: "Checkout - Easy Shop"
