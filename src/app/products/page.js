@@ -1,5 +1,5 @@
 import getProducts from "@/utils/getProducts";
-import SingleProduct from "./singleProduct";
+import SingleProduct from "./SingleProduct";
 
 export const revalidate = 0;
 

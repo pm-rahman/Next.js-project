@@ -4,9 +4,9 @@ import './globals.css'
 import { Roboto } from "next/font/google";
 
 import "./globals.css";
-import Navbar from '@/Component/NavBar';
 import Providers from '@/providers';
 import Toaster from '@/Component/Toaster';
+import Navbar from '@/Component/Navbar';
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],

@@ -1,5 +1,5 @@
 import LoginSvg from "@/Component/LoginSvg";
-import SignupForm from "./signupForm";
+import SignupForm from "./SignupForm";
 
 
 export const metadata = {
