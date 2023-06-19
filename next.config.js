@@ -13,11 +13,15 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'post.healthline.com',
+        hostname: 'www.caringbridge.org',
       },
       {
         protocol: 'https',
-        hostname: 'www.caringbridge.org',
+        hostname: 'cdn.thelocalmomsnetwork.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com',
       },
     ],
   },

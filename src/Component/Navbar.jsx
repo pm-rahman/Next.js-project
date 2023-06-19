@@ -5,9 +5,11 @@ import Link from "next/link";
 import NavLink from "./NavLink";
 import { afterLoginNavData, beforeLoginNavData } from "@/data/navData";
 import useTheme from "@/hooks/useTheme";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "react-hot-toast";
+import { usePathname, useRouter } from "next/navigation";
+import { useCart } from "@/hooks/useCart";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -15,12 +17,29 @@ const Navbar = () => {
     const { uid, displayName, photoURL } = user || {};
     const navData = uid ? afterLoginNavData : beforeLoginNavData;
     const { theme, toggleTheme } = useTheme();
-    const [navToggle, setNavToggle] = useState(false)
+    const [navToggle, setNavToggle] = useState(false);
+    const { replace } = useRouter();
+    const path = usePathname();
 
     const handleLogout = async () => {
-        await logout();
-        toast.success('Successfully logout')
+        try {
+            await logout();
+            const res = await fetch('/api/auth/logout', {
+                method: 'POST'
+            })
+            const data = await res.json();
+            toast.success('Successfully logout')
+            if (path.includes("/dashboard") || path.includes("/profile")) {
+                replace("/");
+            }
+        } catch (error) {
+            toast.error('Something Was Wrong')
+        }
     }
+    const { cart } = useCart();
+    const total = useMemo(
+        () => cart.reduce((pre, cur) => cur.price * cur.quantity + pre, 0),
+        [cart])
 
     return (
         <nav className="navbar sticky top-0 z-10 bg-slate-200 shadow-lg dark:bg-slate-900 lg:pr-3">
@@ -63,7 +82,7 @@ const Navbar = () => {
                                 />
                             </svg>
                             <span className="badge badge-sm indicator-item bg-primary">
-                                1
+                                {cart.length}
                             </span>
                         </div>
                     </label>
@@ -72,8 +91,8 @@ const Navbar = () => {
                         className="card dropdown-content card-compact mt-3 w-52 bg-base-100 shadow"
                     >
                         <div className="card-body">
-                            <span className="text-lg font-bold">1 Items</span>
-                            <span className="text-info">Total: $999</span>
+                            <span className="text-lg font-bold">{cart.length}</span>
+                            <span className="text-info">Total: ${total.toFixed(2)}</span>
                             <div className="card-actions">
                                 <Link href="/checkout" className="block w-full">
                                     <button className="btn-primary btn-block btn">
